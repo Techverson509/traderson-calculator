@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#1565c0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Traderson"/>
+<meta name="description" content="Professional Trading Calculator — Pips, Position, Marge, Devise"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<title>Traderson Calculator PRO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --blue:#1565c0;--blue-light:#e3f2fd;
+  --green:#1b5e20;--green-light:#e8f5e9;
+  --red:#b71c1c;--red-light:#ffebee;
+  --amber:#e65100;--amber-light:#fff3e0;
+  --purple:#4a148c;--purple-light:#f3e5f5;
+  --surface:#f5f7fa;--card:#fff;--border:#dde3ea;
+  --text:#0d1421;--text2:#4a5568;--text3:#8a97a8;
+  --r:14px;--rs:9px;
+}
+html,body{min-height:100%;background:#e8edf2;font-family:system-ui,-apple-system,sans-serif;}
+body{display:flex;justify-content:center;padding:12px 8px 32px;}
+.app{background:var(--surface);border-radius:var(--r);border:1.5px solid var(--border);width:100%;max-width:540px;overflow:hidden;}
+.header{background:var(--blue);padding:16px 18px 12px;display:flex;align-items:center;gap:12px;}
+.logo{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo svg{width:22px;height:22px;}
+.hname{font-size:15px;font-weight:600;color:#fff;}
+.hsub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;}
+.badge{margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.nav{display:grid;grid-template-columns:repeat(6,1fr);background:var(--card);border-bottom:1.5px solid var(--border);}
+.nb{padding:10px 2px 8px;font-size:10px;font-weight:500;color:var(--text2);background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.nb.on{color:var(--blue);border-bottom-color:var(--blue);}
+.nb svg{width:15px;height:15px;}
+.panel{display:none;padding:16px;}
+.panel.on{display:block;}
+.dbox{background:var(--blue);border-radius:var(--r);padding:18px 18px 14px;margin-bottom:12px;}
+.dh{font-size:12px;color:rgba(255,255,255,.6);text-align:right;min-height:17px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dm{font-size:34px;font-weight:300;color:#fff;text-align:right;min-height:46px;word-break:break-all;font-family:monospace;}
+.chiprow{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;min-height:20px;}
+.chip{background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);font-size:11px;padding:3px 10px;border-radius:20px;}
+.bg{display:flex;flex-direction:column;gap:5px;}
+.brow{display:grid;gap:5px;}
+.r4{grid-template-columns:repeat(4,1fr);}
+.r5{grid-template-columns:repeat(5,1fr);}
+button.k{border:none;border-radius:var(--rs);font-size:14px;font-weight:500;height:54px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:filter .1s,transform .08s;font-family:monospace;width:100%;}
+button.k:active{filter:brightness(.88);transform:scale(.95);}
+@media(min-width:460px){button.k{height:60px;font-size:15px;}}
+.kn{background:#fff;color:var(--text);border:1px solid var(--border);}
+.ko{background:var(--blue-light);color:var(--blue);}
+.kf{background:var(--green-light);color:var(--green);}
+.ks{background:var(--amber-light);color:var(--amber);}
+.kt{background:var(--purple-light);color:var(--purple);}
+.ke{background:var(--blue);color:#fff;}
+.kc{background:var(--red-light);color:var(--red);}
+.hp{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px 13px;margin-top:10px;font-family:monospace;font-size:12px;color:var(--text);white-space:pre;display:none;line-height:1.6;}
+.card{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:10px;}
+.fl{display:flex;flex-direction:column;gap:4px;}
+.flbl{font-size:12px;font-weight:500;color:var(--text2);}
+.inp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;}
+.inp:focus{border-color:var(--blue);}
+.sel{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a97a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.go{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;}
+.go:active{filter:brightness(.9);}
+.sep{border:none;border-top:1.5px solid var(--border);}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.mt{background:var(--surface);border-radius:var(--rs);padding:11px 13px;}
+.mt.full{grid-column:1/-1;}
+.ml{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500;}
+.mv{font-size:18px;font-weight:500;color:var(--text);}
+.mv.pos{color:var(--green);}
+.mv.neg{color:var(--red);}
+.mv.inf{color:var(--blue);}
+.stitle{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;padding:4px 0 2px;}
+.toggle-row{display:flex;gap:6px;margin-bottom:8px;}
+.tog{flex:1;padding:8px;font-size:13px;font-weight:500;border-radius:var(--rs);border:1.5px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;transition:all .15s;}
+.tog.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+</style>
+</head>
+<body>
+<style>
+#install-banner{display:none;position:sticky;top:0;z-index:999;background:var(--blue);color:#fff;padding:10px 16px;align-items:center;gap:10px;font-size:13px;}
+#install-banner .ibtn{background:#fff;color:var(--blue);border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;margin-left:auto;}
+#dismiss-install{background:transparent!important;color:rgba(255,255,255,.8)!important;border:none!important;font-size:20px;padding:0 4px;cursor:pointer;margin-left:4px;}
+</style>
+<div id="install-banner">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <span>Enstale Traderson sou telefon ou</span>
+  <button class="ibtn" id="install-btn">Enstale</button>
+  <button id="dismiss-install">&#215;</button>
+</div>
+<div class="app">
+
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="11" stroke="white" stroke-width="1.8"/>
+      <circle cx="14" cy="14" r="3" fill="white"/>
+      <line x1="14" y1="3" x2="14" y2="8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="14" y1="20" x2="14" y2="25" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="3" y1="14" x2="8" y2="14" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="20" y1="14" x2="25" y2="14" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="6" y1="6" x2="10" y2="10" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="18" y1="18" x2="22" y2="22" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="22" y1="6" x2="18" y2="10" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="6" y1="22" x2="10" y2="18" stroke="rgba(255,255,255,.4)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div><div class="hname">Traderson Calculator</div><div class="hsub">Professional Trading Tools</div></div>
+  <div class="badge">PRO</div>
+</div>
+
+<nav class="nav">
+  <button class="nb on" onclick="sw('calc')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="8" y1="5" x2="8" y2="11"/></svg>Calc
+  </button>
+  <button class="nb" onclick="sw('sci')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 13l3-4 2 3 2-7 3 8"/></svg>Science
+  </button>
+  <button class="nb" onclick="sw('pips')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5"/><line x1="8" y1="3" x2="8" y2="8"/><line x1="8" y1="8" x2="11" y2="10"/></svg>Pips
+  </button>
+  <button class="nb" onclick="sw('pos')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="9" width="3" height="5" rx="1"/><rect x="6" y="5" width="3" height="9" rx="1"/><rect x="11" y="2" width="3" height="12" rx="1"/></svg>Position
+  </button>
+  <button class="nb" onclick="sw('marge')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14l4-4 3 2 5-8"/><circle cx="13" cy="4" r="1.5" fill="currentColor" stroke="none"/></svg>Marge
+  </button>
+  <button class="nb" onclick="sw('conv')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h10M10 2l3 3-3 3M13 11H3M6 8l-3 3 3 3"/></svg>Devise
+  </button>
+</nav>
+
+<!-- CALC -->
+<div id="p-calc" class="panel on">
+  <div class="dbox">
+    <div class="dh" id="dh">&nbsp;</div>
+    <div class="dm" id="dd">0</div>
+    <div class="chiprow" id="dc"></div>
+  </div>
+  <div class="bg">
+    <div class="brow r4">
+      <button class="k kf" onclick="h('History')">Hist</button>
+      <button class="k kf" onclick="h('ClearHist')">ClrH</button>
+      <button class="k kc" onclick="h('CE')">CE</button>
+      <button class="k kc" onclick="h('BACK')">&#9003;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kf" onclick="h('sqrt')">&#8730;x</button>
+      <button class="k kf" onclick="h('xpy')">x&#696;</button>
+      <button class="k kf" onclick="h('mod')">mod</button>
+      <button class="k ko" onclick="h('/')">&#247;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('7')">7</button><button class="k kn" onclick="h('8')">8</button><button class="k kn" onclick="h('9')">9</button>
+      <button class="k ko" onclick="h('*')">&#215;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('4')">4</button><button class="k kn" onclick="h('5')">5</button><button class="k kn" onclick="h('6')">6</button>
+      <button class="k ko" onclick="h('-')">&#8722;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('1')">1</button><button class="k kn" onclick="h('2')">2</button><button class="k kn" onclick="h('3')">3</button>
+      <button class="k ko" onclick="h('+')">+</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('+/-')">+/&#8722;</button>
+      <button class="k kn" onclick="h('0')">0</button>
+      <button class="k kn" onclick="h('.')">.</button>
+      <button class="k ke" onclick="h('=')">=</button>
+    </div>
+  </div>
+  <div class="hp" id="hpop"></div>
+</div>
+
+<!-- SCIENCE -->
+<div id="p-sci" class="panel">
+  <div class="dbox">
+    <div class="dh" id="dh2">&nbsp;</div>
+    <div class="dm" id="dd2">0</div>
+  </div>
+  <div class="bg">
+    <div class="brow r5">
+      <button class="k kt" onclick="h('sin')" style="font-size:12px">sin</button>
+      <button class="k kt" onclick="h('cos')" style="font-size:12px">cos</button>
+      <button class="k kt" onclick="h('tan')" style="font-size:12px">tan</button>
+      <button class="k ks" onclick="h('log')" style="font-size:12px">log</button>
+      <button class="k ks" onclick="h('ln')" style="font-size:12px">ln</button>
+    </div>
+    <div class="brow r5">
+      <button class="k kt" onclick="h('asin')" style="font-size:10px">sin&#8315;&#185;</button>
+      <button class="k kt" onclick="h('acos')" style="font-size:10px">cos&#8315;&#185;</button>
+      <button class="k kt" onclick="h('atan')" style="font-size:10px">tan&#8315;&#185;</button>
+      <button class="k ks" onclick="h('x2')" style="font-size:12px">x&#178;</button>
+      <button class="k ks" onclick="h('sqrt')" style="font-size:12px">&#8730;x</button>
+    </div>
+    <div class="brow r5">
+      <button class="k ks" onclick="h('pi')">&#960;</button>
+      <button class="k ks" onclick="h('ec')">e</button>
+      <button class="k ks" onclick="h('1/x')" style="font-size:12px">1/x</button>
+      <button class="k ks" onclick="h('abs')" style="font-size:12px">|x|</button>
+      <button class="k kc" onclick="h('CE')" style="font-size:12px">CE</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('7')">7</button><button class="k kn" onclick="h('8')">8</button><button class="k kn" onclick="h('9')">9</button>
+      <button class="k ko" onclick="h('/')">&#247;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('4')">4</button><button class="k kn" onclick="h('5')">5</button><button class="k kn" onclick="h('6')">6</button>
+      <button class="k ko" onclick="h('*')">&#215;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('1')">1</button><button class="k kn" onclick="h('2')">2</button><button class="k kn" onclick="h('3')">3</button>
+      <button class="k ko" onclick="h('-')">&#8722;</button>
+    </div>
+    <div class="brow r4">
+      <button class="k kn" onclick="h('+/-')">+/&#8722;</button>
+      <button class="k kn" onclick="h('0')">0</button>
+      <button class="k kn" onclick="h('.')">.</button>
+      <button class="k ke" onclick="h('=')">=</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIPS -->
+<div id="p-pips" class="panel">
+  <div class="card">
+    <div class="fl"><div class="flbl">Pè Monnaie</div>
+      <select class="inp sel" id="pp-pair">
+        <optgroup label="Majè (0.0001)">
+          <option value="major">EUR/USD</option>
+          <option value="major">GBP/USD</option>
+          <option value="major">AUD/USD</option>
+          <option value="major">NZD/USD</option>
+          <option value="major">USD/CHF</option>
+          <option value="major">USD/CAD</option>
+        </optgroup>
+        <optgroup label="JPY (0.01)">
+          <option value="jpy">USD/JPY</option>
+          <option value="jpy">EUR/JPY</option>
+          <option value="jpy">GBP/JPY</option>
+          <option value="jpy">AUD/JPY</option>
+          <option value="jpy">CAD/JPY</option>
+          <option value="jpy">CHF/JPY</option>
+        </optgroup>
+        <optgroup label="Minè (0.0001)">
+          <option value="major">EUR/GBP</option>
+          <option value="major">EUR/AUD</option>
+          <option value="major">EUR/CHF</option>
+          <option value="major">GBP/AUD</option>
+          <option value="major">GBP/CHF</option>
+          <option value="major">AUD/CHF</option>
+          <option value="major">AUD/CAD</option>
+          <option value="major">NZD/CHF</option>
+        </optgroup>
+        <optgroup label="Matye Premye">
+          <option value="xau">XAU/USD — Gold</option>
+          <option value="xag">XAG/USD — Silver</option>
+          <option value="xti">XTI/USD — Oil</option>
+        </optgroup>
+        <optgroup label="Endis">
+          <option value="nas">NAS100</option>
+          <option value="nas">US30 / DJ30</option>
+          <option value="spx">SPX500</option>
+          <option value="nas">GER40 / DAX</option>
+          <option value="nas">UK100 / FTSE</option>
+        </optgroup>
+        <optgroup label="Kriptomone">
+          <option value="nas">BTC/USD</option>
+          <option value="xau">ETH/USD</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="two">
+      <div class="fl"><div class="flbl">Lots</div><input class="inp" type="number" id="pp-lots" value="1" min="0.01" step="0.01"/></div>
+      <div class="fl"><div class="flbl">Kantite Pips</div><input class="inp" type="number" id="pp-pips" value="50" min="1" step="1"/></div>
+    </div>
+    <div class="two">
+      <div class="fl"><div class="flbl">Prix Entré</div><input class="inp" type="number" id="pp-entry" value="1.10000" step="0.00001"/></div>
+      <div class="fl"><div class="flbl">Direksyon</div>
+        <select class="inp sel" id="pp-dir"><option value="buy">BUY &#8593;</option><option value="sell">SELL &#8595;</option></select>
+      </div>
+    </div>
+    <hr class="sep"/>
+    <button class="go" onclick="cPips()">Kalkile Pips yo</button>
+    <div class="res" id="rp" style="display:none">
+      <div class="mt"><div class="ml">Valè / pip</div><div class="mv inf" id="rp1">-</div></div>
+      <div class="mt"><div class="ml">Pips total</div><div class="mv" id="rp2">-</div></div>
+      <div class="mt"><div class="ml">Prix TP</div><div class="mv pos" id="rp3">-</div></div>
+      <div class="mt"><div class="ml">Prix SL</div><div class="mv neg" id="rp4">-</div></div>
+      <div class="mt full"><div class="ml">Profit si TP touche</div><div class="mv pos" id="rp5">-</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- POSITION AMELYORE -->
+<div id="p-pos" class="panel">
+  <div class="card">
+
+    <div class="stitle">Enfòmasyon Kont</div>
+    <div class="two">
+      <div class="fl"><div class="flbl">Devise Kont</div>
+        <select class="inp sel" id="ps-accy">
+          <option value="USD">USD — Dola</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="GBP">GBP — Liv</option>
+          <option value="JPY">JPY — Yen</option>
+          <option value="CHF">CHF — Fran</option>
+          <option value="CAD">CAD — Dola CA</option>
+          <option value="AUD">AUD — Dola AU</option>
+          <option value="HTG">HTG — Goud</option>
+        </select>
+      </div>
+      <div class="fl"><div class="flbl">Tay Kont</div>
+        <input class="inp" type="number" id="ps-cap" value="10000" step="100" min="1"/>
+      </div>
+    </div>
+
+    <hr class="sep"/>
+    <div class="stitle">Pè &amp; Direksyon</div>
+    <div class="two">
+      <div class="fl"><div class="flbl">Pè Monnaie</div>
+        <select class="inp sel" id="ps-pair">
+          <optgroup label="Majè">
+            <option value="major">EUR/USD</option>
+            <option value="major">GBP/USD</option>
+            <option value="major">AUD/USD</option>
+            <option value="major">NZD/USD</option>
+            <option value="major">USD/CHF</option>
+            <option value="major">USD/CAD</option>
+          </optgroup>
+          <optgroup label="JPY">
+            <option value="jpy">USD/JPY</option>
+            <option value="jpy">EUR/JPY</option>
+            <option value="jpy">GBP/JPY</option>
+            <option value="jpy">AUD/JPY</option>
+            <option value="jpy">CAD/JPY</option>
+          </optgroup>
+          <optgroup label="Minè">
+            <option value="major">EUR/GBP</option>
+            <option value="major">EUR/AUD</option>
+            <option value="major">EUR/CHF</option>
+            <option value="major">GBP/AUD</option>
+            <option value="major">GBP/CHF</option>
+            <option value="major">AUD/CAD</option>
+            <option value="major">NZD/CHF</option>
+          </optgroup>
+          <optgroup label="Matye Premye">
+            <option value="xau">XAU/USD — Gold</option>
+            <option value="xag">XAG/USD — Silver</option>
+            <option value="xti">XTI/USD — Oil</option>
+          </optgroup>
+          <optgroup label="Endis">
+            <option value="nas">NAS100</option>
+            <option value="nas">US30 / DJ30</option>
+            <option value="spx">SPX500</option>
+            <option value="nas">GER40 / DAX</option>
+          </optgroup>
+          <optgroup label="Kriptomone">
+            <option value="nas">BTC/USD</option>
+            <option value="xau">ETH/USD</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="fl"><div class="flbl">Direksyon</div>
+        <select class="inp sel" id="ps-dir">
+          <option value="buy">BUY &#8593;</option>
+          <option value="sell">SELL &#8595;</option>
+        </select>
+      </div>
+    </div>
+    <div class="fl"><div class="flbl">Prix Entré</div>
+      <input class="inp" type="number" id="ps-entry" value="1.10000" step="0.00001"/>
+    </div>
+
+    <hr class="sep"/>
+    <div class="stitle">Risk (%)</div>
+    <div class="fl">
+      <input class="inp" type="number" id="ps-risk" value="1" step="0.1" min="0.1" max="100"/>
+    </div>
+
+    <hr class="sep"/>
+    <div class="stitle">Stop Loss</div>
+    <div class="toggle-row">
+      <button class="tog on" id="sl-pips-btn" onclick="toggleMode('sl','pips')">Pips</button>
+      <button class="tog" id="sl-price-btn" onclick="toggleMode('sl','price')">Prix</button>
+    </div>
+    <div class="fl" id="sl-pips-row">
+      <input class="inp" type="number" id="ps-sl-pips" value="30" step="1" min="1" placeholder="ex: 30"/>
+    </div>
+    <div class="fl" id="sl-price-row" style="display:none">
+      <input class="inp" type="number" id="ps-sl-price" value="" step="0.00001" placeholder="ex: 1.0950"/>
+    </div>
+
+    <hr class="sep"/>
+    <div class="stitle">Take Profit <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none;">(opsyonèl — pou kalkile profit)</span></div>
+    <div class="toggle-row">
+      <button class="tog on" id="tp-pips-btn" onclick="toggleMode('tp','pips')">Pips</button>
+      <button class="tog" id="tp-price-btn" onclick="toggleMode('tp','price')">Prix</button>
+    </div>
+    <div class="fl" id="tp-pips-row">
+      <input class="inp" type="number" id="ps-tp-pips" value="" step="1" min="1" placeholder="ex: 60 (opsyonèl)"/>
+    </div>
+    <div class="fl" id="tp-price-row" style="display:none">
+      <input class="inp" type="number" id="ps-tp-price" value="" step="0.00001" placeholder="ex: 1.1200 (opsyonèl)"/>
+    </div>
+
+    <hr class="sep"/>
+    <button class="go" onclick="cPos()">Kalkile Pozisyon</button>
+
+    <div class="res" id="rps" style="display:none">
+      <div class="mt full"><div class="ml">Montan Risk</div><div class="mv neg" id="rps0">-</div></div>
+      <div class="mt full"><div class="ml">Tay Lot Egzak</div><div class="mv pos" id="rps1">-</div></div>
+      <div class="mt"><div class="ml">SL (pips)</div><div class="mv neg" id="rps-sl">-</div></div>
+      <div class="mt"><div class="ml">Valè / pip</div><div class="mv" id="rps3">-</div></div>
+      <div class="mt"><div class="ml">Inite Total</div><div class="mv" id="rps2">-</div></div>
+      <div class="mt"><div class="ml">Max Loss (SL)</div><div class="mv neg" id="rps5">-</div></div>
+      <div class="mt" id="rps-tp-row" style="display:none"><div class="ml">TP (pips)</div><div class="mv pos" id="rps-tp">-</div></div>
+      <div class="mt" id="rps-profit-row" style="display:none"><div class="ml">Profit si TP</div><div class="mv pos" id="rps-profit">-</div></div>
+      <div class="mt full" id="rps-rr-row" style="display:none"><div class="ml">Ratio R:R</div><div class="mv" id="rps-rr">-</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MARGE AMELYORE -->
+<div id="p-marge" class="panel">
+  <div class="card">
+    <div class="fl"><div class="flbl">Pè Monnaie</div>
+      <select class="inp sel" id="mg-pair">
+        <optgroup label="Majè">
+          <option value="major">EUR/USD</option>
+          <option value="major">GBP/USD</option>
+          <option value="major">AUD/USD</option>
+          <option value="major">NZD/USD</option>
+          <option value="major">USD/CHF</option>
+          <option value="major">USD/CAD</option>
+        </optgroup>
+        <optgroup label="JPY">
+          <option value="jpy">USD/JPY</option>
+          <option value="jpy">EUR/JPY</option>
+          <option value="jpy">GBP/JPY</option>
+          <option value="jpy">AUD/JPY</option>
+        </optgroup>
+        <optgroup label="Minè">
+          <option value="major">EUR/GBP</option>
+          <option value="major">EUR/AUD</option>
+          <option value="major">EUR/CHF</option>
+          <option value="major">GBP/AUD</option>
+          <option value="major">GBP/CHF</option>
+        </optgroup>
+        <optgroup label="Matye Premye">
+          <option value="xau">XAU/USD — Gold</option>
+          <option value="xag">XAG/USD — Silver</option>
+          <option value="xti">XTI/USD — Oil</option>
+        </optgroup>
+        <optgroup label="Endis">
+          <option value="nas">NAS100</option>
+          <option value="nas">US30</option>
+          <option value="spx">SPX500</option>
+          <option value="nas">DAX</option>
+        </optgroup>
+        <optgroup label="Kriptomone">
+          <option value="nas">BTC/USD</option>
+          <option value="xau">ETH/USD</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="two">
+      <div class="fl"><div class="flbl">Lots</div><input class="inp" type="number" id="mg-lots" value="1" step="0.01" min="0.01"/></div>
+      <div class="fl"><div class="flbl">Levier (1:X)</div><input class="inp" type="number" id="mg-lev" value="100" step="10" min="1"/></div>
+    </div>
+    <div class="fl"><div class="flbl">Prix Kouran</div><input class="inp" type="number" id="mg-price" value="1.10000" step="0.00001"/></div>
+    <hr class="sep"/>
+    <button class="go" onclick="cMarge()">Kalkile Marge</button>
+    <div class="res" id="rm" style="display:none">
+      <div class="mt full"><div class="ml">Marge Requiz</div><div class="mv neg" id="rm1">-</div></div>
+      <div class="mt"><div class="ml">Tay Kontra</div><div class="mv" id="rm2">-</div></div>
+      <div class="mt"><div class="ml">Levier</div><div class="mv inf" id="rm3">-</div></div>
+      <div class="mt full"><div class="ml">Valè Notional (USD)</div><div class="mv" id="rm4">-</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DEVISE -->
+<div id="p-conv" class="panel">
+  <div class="card">
+    <div class="fl"><div class="flbl">Montan</div><input class="inp" type="number" id="cv-amt" value="1000" step="1"/></div>
+    <div class="two">
+      <div class="fl"><div class="flbl">De (From)</div>
+        <select class="inp sel" id="cv-from">
+          <option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option>
+          <option>CHF</option><option>CAD</option><option>AUD</option><option>NZD</option><option>HTG</option>
+        </select>
+      </div>
+      <div class="fl"><div class="flbl">Vè (To)</div>
+        <select class="inp sel" id="cv-to">
+          <option>EUR</option><option>USD</option><option>GBP</option><option>JPY</option>
+          <option>CHF</option><option>CAD</option><option>AUD</option><option>NZD</option><option>HTG</option>
+        </select>
+      </div>
+    </div>
+    <div class="fl"><div class="flbl">To Chanj (1 From = ? To)</div><input class="inp" type="number" id="cv-rate" value="1.08" step="0.0001"/></div>
+    <hr class="sep"/>
+    <button class="go" onclick="cConv()">Konvèti Devise</button>
+    <div class="res" id="rcv" style="display:none">
+      <div class="mt full"><div class="ml">Rezilta</div><div class="mv pos" id="rcv1">-</div></div>
+      <div class="mt"><div class="ml">To Chanj</div><div class="mv inf" id="rcv2">-</div></div>
+      <div class="mt"><div class="ml">To Envès</div><div class="mv" id="rcv3">-</div></div>
+      <div class="mt full"><div class="ml">Nòt</div><div class="mv" style="font-size:12px;color:var(--text3)" id="rcv4">-</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+let cur='',fv=null,op=null,je=false,hist=[],pt=null;
+function upd(v,hint){
+  ['dd','dd2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=v;});
+  const hv=hint!==undefined?hint:hstr();
+  ['dh','dh2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=hv||'\u00a0';});
+  const chip=document.getElementById('dc');
+  if(chip){if(fv!==null&&op){const s={'+':'+','-':'−','*':'×','/':'÷','xpy':'^','mod':'%'};chip.innerHTML='<span class="chip">'+fmt(fv)+' '+(s[op]||op)+'</span>';}else chip.innerHTML='';}
+}
+function hstr(){if(fv!==null&&op){const s={'+':'+','-':'−','*':'×','/':'÷','xpy':'^','mod':'%'};return fmt(fv)+' '+(s[op]||op);}return'';}
+function fmt(v){if(typeof v==='number'&&isFinite(v)){if(Number.isInteger(v))return String(v);return parseFloat(v.toFixed(8));}return v;}
+function err(m){upd('Err: '+m,'');}
+function evaluate(){
+  if(fv===null||cur==='')return;
+  const a=fv,b=parseFloat(cur),o=op;let r;
+  try{
+    if(o==='+')r=a+b;else if(o==='-')r=a-b;else if(o==='*')r=a*b;
+    else if(o==='/'){if(b===0)throw new Error('÷ pa zewo');r=a/b;}
+    else if(o==='xpy')r=Math.pow(a,b);
+    else if(o==='mod'){if(b===0)throw new Error('mod 0');r=a%b;}
+    const sym={'+':'+','-':'−','*':'×','/':'÷','xpy':'^','mod':'%'};
+    const ex=fmt(a)+' '+sym[o]+' '+fmt(b);const res=fmt(r);
+    hist.push(ex+' = '+res);if(hist.length>20)hist.shift();
+    upd(String(res),ex);cur=String(res);fv=null;op=null;je=true;
+  }catch(e){err(e.message);cur='';fv=null;op=null;je=false;}
+}
+function unary(l){
+  const v=cur?parseFloat(cur):(fv!==null?fv:null);
+  if(v===null&&l!=='pi'&&l!=='ec')return;
+  let r,ex;
+  try{
+    if(l==='sin'){r=Math.sin(v*Math.PI/180);ex='sin('+fmt(v)+'°)';}
+    else if(l==='cos'){r=Math.cos(v*Math.PI/180);ex='cos('+fmt(v)+'°)';}
+    else if(l==='tan'){r=Math.tan(v*Math.PI/180);ex='tan('+fmt(v)+'°)';}
+    else if(l==='asin'){if(v<-1||v>1)throw new Error('Domain');r=Math.asin(v)*180/Math.PI;ex='asin('+fmt(v)+')';}
+    else if(l==='acos'){if(v<-1||v>1)throw new Error('Domain');r=Math.acos(v)*180/Math.PI;ex='acos('+fmt(v)+')';}
+    else if(l==='atan'){r=Math.atan(v)*180/Math.PI;ex='atan('+fmt(v)+')';}
+    else if(l==='log'){if(v<=0)throw new Error('log≤0');r=Math.log10(v);ex='log('+fmt(v)+')';}
+    else if(l==='ln'){if(v<=0)throw new Error('ln≤0');r=Math.log(v);ex='ln('+fmt(v)+')';}
+    else if(l==='sqrt'){if(v<0)throw new Error('√ neg');r=Math.sqrt(v);ex='√('+fmt(v)+')';}
+    else if(l==='x2'){r=v*v;ex='('+fmt(v)+')²';}
+    else if(l==='1/x'){if(v===0)throw new Error('1/0');r=1/v;ex='1/'+fmt(v);}
+    else if(l==='abs'){r=Math.abs(v);ex='|'+fmt(v)+'|';}
+    else if(l==='pi'){r=Math.PI;ex='π';}
+    else if(l==='ec'){r=Math.E;ex='e';}
+    const res=fmt(r);hist.push(ex+' = '+res);if(hist.length>20)hist.shift();
+    upd(String(res),ex);cur=String(res);fv=null;op=null;je=true;
+  }catch(e){err(e.message);}
+}
+function h(l){
+  if('0123456789'.includes(l)||l==='.'){
+    if(je){cur='';je=false;}if(l==='.'&&cur.includes('.'))return;
+    cur+=l;upd(cur,hstr());
+  }else if(['+','-','*','/','xpy','mod'].includes(l)){
+    if(cur===''&&fv===null)return;if(fv!==null&&cur)evaluate();if(cur)fv=parseFloat(cur);
+    op=l;cur='';je=false;upd('0',hstr());
+  }else if(['sin','cos','tan','asin','acos','atan','log','ln','sqrt','x2','1/x','abs','pi','ec'].includes(l)){unary(l);
+  }else if(l==='='){evaluate();
+  }else if(l==='CE'){cur='';fv=null;op=null;je=false;upd('0','');
+  }else if(l==='BACK'){
+    if(je){cur='';fv=null;op=null;je=false;upd('0','');return;}
+    cur=cur.slice(0,-1);upd(cur||'0',hstr());
+  }else if(l==='+/-'){if(cur&&cur!=='0'){cur=cur.startsWith('-')?cur.slice(1):'-'+cur;upd(cur,hstr());}
+  }else if(l==='History'){
+    if(pt)clearTimeout(pt);
+    const hp=document.getElementById('hpop');
+    hp.textContent=hist.length?[...hist].reverse().slice(0,8).join('\n'):'Pa gen istwa.';
+    hp.style.display='block';pt=setTimeout(()=>{hp.style.display='none';},5000);
+  }else if(l==='ClearHist'){
+    hist=[];document.getElementById('hpop').style.display='none';
+    upd(cur||'0','Istwa efase');setTimeout(()=>upd(cur||'0',hstr()),1800);
+  }
+}
+function sw(t){
+  const ids=['calc','sci','pips','pos','marge','conv'];
+  ids.forEach(id=>{document.getElementById('p-'+id).classList.toggle('on',id===t);});
+  document.querySelectorAll('.nb').forEach((b,i)=>{b.classList.toggle('on',ids[i]===t);});
+}
+function pipSz(p){return p==='jpy'?0.01:p==='xau'?0.01:p==='xag'?0.001:p==='xti'?0.01:p==='spx'?0.1:p==='nas'?1:0.0001;}
+function lotSz(p){return p==='nas'?1:p==='spx'?1:p==='xau'?100:p==='xag'?5000:p==='xti'?1000:100000;}
+function getLotMul(t){return{standard:1,mini:0.1,micro:0.01,nano:0.001}[t]||1;}
+
+function cPips(){
+  const pair=document.getElementById('pp-pair').value;
+  const lots=parseFloat(document.getElementById('pp-lots').value)||1;
+  const pips=parseFloat(document.getElementById('pp-pips').value)||50;
+  const entry=parseFloat(document.getElementById('pp-entry').value)||1.1;
+  const dir=document.getElementById('pp-dir').value;
+  const ps=pipSz(pair),ls=lotSz(pair);
+  const pv=lots*ls*ps;
+  const dec=pair==='jpy'||pair==='xau'?2:pair==='nas'?0:pair==='spx'?1:pair==='xag'?3:4;
+  const tp=dir==='buy'?(entry+pips*ps).toFixed(dec):(entry-pips*ps).toFixed(dec);
+  const sl=dir==='buy'?(entry-pips*ps).toFixed(dec):(entry+pips*ps).toFixed(dec);
+  document.getElementById('rp1').textContent='$'+pv.toFixed(4);
+  document.getElementById('rp2').textContent=pips+' pips';
+  document.getElementById('rp3').textContent=tp;
+  document.getElementById('rp4').textContent=sl;
+  document.getElementById('rp5').textContent='$'+(pv*pips).toFixed(2);
+  document.getElementById('rp').style.display='grid';
+}
+
+// ── Toggle SL / TP mode ───────────────────────────────────
+function toggleMode(which, mode) {
+  const pipsRow  = document.getElementById(which+'-pips-row');
+  const priceRow = document.getElementById(which+'-price-row');
+  const pipsBtn  = document.getElementById(which+'-pips-btn');
+  const priceBtn = document.getElementById(which+'-price-btn');
+  if (mode === 'pips') {
+    pipsRow.style.display  = '';
+    priceRow.style.display = 'none';
+    pipsBtn.classList.add('on');
+    priceBtn.classList.remove('on');
+  } else {
+    pipsRow.style.display  = 'none';
+    priceRow.style.display = '';
+    pipsBtn.classList.remove('on');
+    priceBtn.classList.add('on');
+  }
+}
+
+function cPos(){
+  const accy    = document.getElementById('ps-accy').value;
+  const cap     = parseFloat(document.getElementById('ps-cap').value)   || 10000;
+  const riskPct = parseFloat(document.getElementById('ps-risk').value)  || 1;
+  const pair    = document.getElementById('ps-pair').value;
+  const dir     = document.getElementById('ps-dir').value;
+  const entry   = parseFloat(document.getElementById('ps-entry').value) || 0;
+
+  // ── Pip value pou 1 Standard Lot ─────────────────────
+  let pipValPerStdLot, pipSize;
+  if      (pair==='jpy') { pipValPerStdLot=10;   pipSize=0.01;   }
+  else if (pair==='xau') { pipValPerStdLot=1.0;  pipSize=0.01;   }
+  else if (pair==='xag') { pipValPerStdLot=5.0;  pipSize=0.001;  }
+  else if (pair==='xti') { pipValPerStdLot=10.0; pipSize=0.01;   }
+  else if (pair==='spx') { pipValPerStdLot=0.1;  pipSize=0.1;    }
+  else if (pair==='nas') { pipValPerStdLot=1.0;  pipSize=1.0;    }
+  else                   { pipValPerStdLot=10.0; pipSize=0.0001; }
+
+  // ── Kalkile SL pips ───────────────────────────────────
+  let slPips = 0;
+  const slMode = document.getElementById('sl-pips-btn').classList.contains('on') ? 'pips' : 'price';
+  if (slMode === 'pips') {
+    slPips = parseFloat(document.getElementById('ps-sl-pips').value) || 30;
+  } else {
+    const slPrice = parseFloat(document.getElementById('ps-sl-price').value) || 0;
+    if (entry > 0 && slPrice > 0) {
+      slPips = Math.abs(entry - slPrice) / pipSize;
+    }
+  }
+  if (slPips <= 0) { alert('Mete yon valè SL valid!'); return; }
+
+  // ── Kalkile TP pips (opsyonèl) ────────────────────────
+  let tpPips = 0;
+  const tpMode = document.getElementById('tp-pips-btn').classList.contains('on') ? 'pips' : 'price';
+  if (tpMode === 'pips') {
+    tpPips = parseFloat(document.getElementById('ps-tp-pips').value) || 0;
+  } else {
+    const tpPrice = parseFloat(document.getElementById('ps-tp-price').value) || 0;
+    if (entry > 0 && tpPrice > 0) {
+      tpPips = Math.abs(tpPrice - entry) / pipSize;
+    }
+  }
+
+  // ── Fòmil MyFXBook ────────────────────────────────────
+  const riskAmt    = cap * (riskPct / 100);
+  const stdLots    = riskAmt / (slPips * pipValPerStdLot);
+  const units      = stdLots * 100000;
+  const totalPipVal= stdLots * pipValPerStdLot;
+  const maxLoss    = totalPipVal * slPips;
+
+  // Prix SL & TP
+  const slPx = dir==='buy' ? (entry - slPips*pipSize) : (entry + slPips*pipSize);
+  const tpPx = tpPips > 0
+    ? (dir==='buy' ? (entry + tpPips*pipSize) : (entry - tpPips*pipSize))
+    : null;
+
+  const dec = pair==='jpy'?2 : pair==='xau'?2 : pair==='xag'?3 : pair==='nas'?0 : pair==='spx'?1 : 5;
+
+  // ── Profit si TP ─────────────────────────────────────
+  const profit = tpPips > 0 ? totalPipVal * tpPips : null;
+  const rr     = tpPips > 0 ? (tpPips / slPips) : null;
+
+  // ── Afichaj ───────────────────────────────────────────
+  document.getElementById('rps0').textContent  = accy+' '+riskAmt.toFixed(2);
+  document.getElementById('rps1').textContent  = stdLots.toFixed(2)+' lots';
+  document.getElementById('rps-sl').textContent= slPips.toFixed(1)+' pips'+(entry>0?' (Prix: '+slPx.toFixed(dec)+')':'');
+  document.getElementById('rps3').textContent  = '$'+totalPipVal.toFixed(2)+' / pip';
+  document.getElementById('rps2').textContent  = Math.round(units).toLocaleString()+' inite';
+  document.getElementById('rps5').textContent  = accy+' '+maxLoss.toFixed(2);
+
+  const tpRow     = document.getElementById('rps-tp-row');
+  const profitRow = document.getElementById('rps-profit-row');
+  const rrRow     = document.getElementById('rps-rr-row');
+
+  if (profit !== null) {
+    document.getElementById('rps-tp').textContent     = tpPips.toFixed(1)+' pips'+(entry>0?' (Prix: '+tpPx.toFixed(dec)+')':'');
+    document.getElementById('rps-profit').textContent = accy+' '+profit.toFixed(2);
+    document.getElementById('rps-rr').textContent     = '1 : '+(rr).toFixed(2)+(rr>=2?' ✓ Bon ratio':rr>=1?' ~ Akseptab':' ✗ Risk > Reward');
+    tpRow.style.display='';profitRow.style.display='';rrRow.style.display='';
+  } else {
+    tpRow.style.display='none';profitRow.style.display='none';rrRow.style.display='none';
+  }
+
+  document.getElementById('rps').style.display='grid';
+}
+
+function cMarge(){
+  const pair=document.getElementById('mg-pair').value;
+  const lots=parseFloat(document.getElementById('mg-lots').value)||1;
+  const lev=parseFloat(document.getElementById('mg-lev').value)||100;
+  const price=parseFloat(document.getElementById('mg-price').value)||1.1;
+  const ls=lotSz(pair);
+  let notional;
+  if(pair==='jpy')notional=lots*ls/price;
+  else if(pair==='xau')notional=lots*100*price;
+  else if(pair==='xag')notional=lots*5000*price;
+  else if(pair==='xti')notional=lots*1000*price;
+  else if(pair==='nas'||pair==='spx')notional=lots*price;
+  else notional=lots*ls*price;
+  const marge=notional/lev;
+  document.getElementById('rm1').textContent='$'+marge.toFixed(2);
+  document.getElementById('rm2').textContent=(lots*ls).toLocaleString();
+  document.getElementById('rm3').textContent='1:'+Math.round(lev);
+  document.getElementById('rm4').textContent='$'+notional.toFixed(2);
+  document.getElementById('rm').style.display='grid';
+}
+
+function cConv(){
+  const amount=parseFloat(document.getElementById('cv-amt').value)||1000;
+  const from=document.getElementById('cv-from').value;
+  const to=document.getElementById('cv-to').value;
+  const rate=parseFloat(document.getElementById('cv-rate').value)||1;
+  const result=amount*rate;
+  document.getElementById('rcv1').textContent=result.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' '+to;
+  document.getElementById('rcv2').textContent='1 '+from+' = '+rate+' '+to;
+  document.getElementById('rcv3').textContent='1 '+to+' = '+(1/rate).toFixed(5)+' '+from;
+  document.getElementById('rcv4').textContent='Itilize to chanj broker ou a pou rezilta egzak.';
+  document.getElementById('rcv').style.display='grid';
+}
+</script>
+<script>
+// ── PWA Service Worker ────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ── Install banner ────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').style.display = 'flex';
+});
+document.getElementById('install-btn').addEventListener('click', () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('install-banner').style.display = 'none';
+    });
+  }
+});
+document.getElementById('dismiss-install').addEventListener('click', () => {
+  document.getElementById('install-banner').style.display = 'none';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').style.display = 'none';
+});
+</script>
+</body>
+</html>
